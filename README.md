@@ -11,18 +11,10 @@ Some use cases for [numbers](https://github.com/myersm0/SuffixAutomata.jl/blob/m
 - Compute the longest common substring between two sequences (`lcs`).
 
 ## Usage
-
+You will normally construct a `SuffixAutomaton{T}` from a `Vector{T}` where T is any iterable type:
 ```julia
 using SuffixAutomata
 
-# build from characters
-a = SuffixAutomaton("ababc")
-
-occursin("ab", a)      # true
-findall("ab", a)       # [1, 3]
-lcs(a, "abcdefg")      # ("abc", 3)
-
-# build from integers
 a = SuffixAutomaton([1, 2, 3, 1, 2, 3])
 
 occursin([1, 2, 3], a)   # true
@@ -38,6 +30,16 @@ length(a)                # 7
 a[1:5]                   # [1, 2, 3, 1, 2]
 append!(a, a[1:end])     # double the length by appending
 length(a)                # 14
+```
+
+Alternatively you may pass in a single string and it will be broken up for you into a vector of `Char`:
+```julia
+a = SuffixAutomaton("ababc")
+typeof(a)                    # SuffixAutomaton{Char}
+
+occursin("ab", a)            # true
+findall("ab", a)             # [1, 3]
+lcs(a, "abcdefg")            # ("abc", 3)
 ```
 
 [![Build Status](https://github.com/myersm0/SuffixAutomata.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/myersm0/SuffixAutomata.jl/actions/workflows/CI.yml?query=branch%3Amain)
