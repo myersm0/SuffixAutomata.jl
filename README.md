@@ -36,6 +36,7 @@ Alternatively, for the more canonical case of dealing with _character_ data, you
 ```julia
 a = SuffixAutomaton("ababc")
 typeof(a)                    # SuffixAutomaton{Char}
+eltype(a)                    # Char
 
 occursin("ab", a)            # true
 findall("ab", a)             # [1, 3]
