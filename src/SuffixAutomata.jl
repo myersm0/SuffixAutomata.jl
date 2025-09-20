@@ -241,6 +241,14 @@ function Base.lastindex(automaton::SuffixAutomaton)
 	return length(automaton.data)
 end
 
+function Base.isequal(a::SuffixAutomaton, b::SuffixAutomaton)
+	a.data == b.data
+end
+
+function Base.:(==)(a::SuffixAutomaton, b::SuffixAutomaton)
+	isequal(a, b)
+end
+
 function substring_count(automaton::SuffixAutomaton{T}) where {T}
 	count = 0
 	for state in automaton.states

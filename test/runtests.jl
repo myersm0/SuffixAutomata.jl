@@ -4,6 +4,7 @@ using SuffixAutomata
 @testset "SuffixAutomata.jl" begin
 	a = SuffixAutomaton{Char}()
 	append!(a, "ababc")
+	@test a == SuffixAutomaton("ababc") == SuffixAutomaton(collect("ababc"))
 
 	@test occursin("ab", a)
 	@test occursin("bc", a)
