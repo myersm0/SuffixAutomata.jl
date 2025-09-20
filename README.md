@@ -16,16 +16,14 @@ Some use cases for [numbers](https://github.com/myersm0/SuffixAutomata.jl/blob/m
 using SuffixAutomata
 
 # build from characters
-a = SuffixAutomaton()
-append!(a, collect("ababc"))
+a = SuffixAutomaton("ababc")
 
 occursin("ab", a)      # true
 findall("ab", a)       # [1, 3]
 lcs("abcdefg", a)      # ("abc", 3)
 
 # build from integers
-a = SuffixAutomaton{Int}()
-append!(a, [1, 2, 3, 1, 2, 3])
+a = SuffixAutomaton([1, 2, 3, 1, 2, 3])
 
 occursin([1, 2, 3], a)   # true
 findall([1, 2, 3], a)    # [1, 4]
@@ -35,6 +33,11 @@ lcs(a, [1, 2, 3, 4])     # ([1, 2, 3], 1)
 push!(a, 4)
 occursin(4, a)           # true
 lcs(a, [1, 2, 3, 4])     # ([1, 2, 3, 4], 1)
+
+length(a)                # 7
+a[1:5]                   # [1, 2, 3, 1, 2]
+append!(a, a[1:end])     # double the length by appending
+length(a)                # 14
 ```
 
 [![Build Status](https://github.com/myersm0/SuffixAutomata.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/myersm0/SuffixAutomata.jl/actions/workflows/CI.yml?query=branch%3Amain)
