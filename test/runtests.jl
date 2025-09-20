@@ -1,5 +1,6 @@
 using Test
 using SuffixAutomata
+using Pkg.Artifacts
 
 @testset "SuffixAutomata.jl" begin
 	a = SuffixAutomaton{Char}()
@@ -24,7 +25,7 @@ using SuffixAutomata
 
 	sub, pos = lcs(a, "zzabcy")
 	@test String(sub) == "abc"
-	@test pos == 3  # Julia indices are 1-based
+	@test pos == 3
 
 	# empty automaton
 	a = SuffixAutomaton()
@@ -51,6 +52,7 @@ using SuffixAutomata
 
 	a = SuffixAutomaton{Int}()
 	append!(a, [1, 2, 1, 3])
+	@test a == SuffixAutomaton(a.data)
 
 	# membership
 	@test occursin([1,2], a)
@@ -64,4 +66,25 @@ using SuffixAutomata
 	# distinct substrings
 	@test substring_count(a) == 9
 end
+
+rootpath = artifact"pg_texts"
+filename = joinpath(rootpath, "pg11.txt") # Alice in Wonderland
+text = join(readlines(filename)[54:3403], '\n')
+@testset "Alice in Wonderland" begin
+	a = SuffixAutomaton(text)
+	@test occursin("Alice", a)
+	for letter in collect("abcdefghijklmnopqrstuvwxyz")
+		@test !occursin("Alice$letter", a)
+	end
+	@test lcs(a, "Alice") == lcs(a, "Alicexyz") == ("Alice", 1)
+	@test lcs(a, "xyzAlice") == lcs(a, "xyzAlicexyz") == ("Alice", 4)
+	@test length(findall("Alice", a)) == 397
+end
+	
+
+
+
+
+
+
 

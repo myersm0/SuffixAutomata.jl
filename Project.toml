@@ -3,11 +3,14 @@ uuid = "d8d90db5-3bd3-4328-8736-8f5f0958bb41"
 authors = ["Michael Myers"]
 version = "0.1.0"
 
+[deps]
+
 [compat]
 julia = "1.6.7"
 
 [extras]
+Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
-test = ["Test"]
+test = ["Pkg", "Test"]
