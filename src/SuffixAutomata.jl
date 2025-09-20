@@ -18,7 +18,7 @@ mutable struct SuffixAutomaton{T}
 	root::State{T}
 	last::State{T}
 	states::Vector{State{T}}
-	text::Vector{T}
+	data::Vector{T}
 end
 
 function SuffixAutomaton{T}() where {T}
@@ -58,8 +58,8 @@ function clone_state(state::State{T}, new_length::Int) where {T}
 end
 
 function Base.push!(automaton::SuffixAutomaton{T}, symbol::T) where {T}
-	position = length(automaton.text)
-	push!(automaton.text, symbol)
+	position = length(automaton.data)
+	push!(automaton.data, symbol)
 	new_state = State{T}(automaton.last.length + 1, position)
 	push!(automaton.states, new_state)
 	current = automaton.last
@@ -141,15 +141,15 @@ function Base.in(pattern, automaton::SuffixAutomaton{T}) where {T}
 end
 
 function Base.findall(pattern, automaton::SuffixAutomaton{T}) where {T}
-	isempty(pattern) && return collect(1:length(automaton.text)+1)
+	isempty(pattern) && return collect(1:length(automaton.data)+1)
 
 	state = find_state(automaton, pattern)
 	state === nothing && return Int[]
 
 	patlen = length(pattern)
 	positions = Int[]
-	for i in 1:(length(automaton.text) - patlen + 1)
-		if automaton.text[i:i+patlen-1] == pattern
+	for i in 1:(length(automaton.data) - patlen + 1)
+		if automaton.data[i:i+patlen-1] == pattern
 			push!(positions, i)
 		end
 	end
@@ -205,7 +205,7 @@ function lcs(automaton::SuffixAutomaton{Char}, str::AbstractString)
 end
 
 function Base.length(automaton::SuffixAutomaton)
-	return length(automaton.text)
+	return length(automaton.data)
 end
 
 function Base.size(automaton::SuffixAutomaton)
@@ -213,7 +213,7 @@ function Base.size(automaton::SuffixAutomaton)
 end
 
 function Base.isempty(automaton::SuffixAutomaton)
-	return isempty(automaton.text)
+	return isempty(automaton.data)
 end
 
 function Base.eltype(::Type{SuffixAutomaton{T}}) where {T}
@@ -226,11 +226,11 @@ end
 
 # Indexing support
 function Base.getindex(automaton::SuffixAutomaton, i::Int)
-	return automaton.text[i]
+	return automaton.data[i]
 end
 
 function Base.getindex(automaton::SuffixAutomaton, r::AbstractRange)
-	return automaton.text[r]
+	return automaton.data[r]
 end
 
 function Base.firstindex(automaton::SuffixAutomaton)
@@ -238,7 +238,7 @@ function Base.firstindex(automaton::SuffixAutomaton)
 end
 
 function Base.lastindex(automaton::SuffixAutomaton)
-	return length(automaton.text)
+	return length(automaton.data)
 end
 
 function substring_count(automaton::SuffixAutomaton{T}) where {T}
@@ -269,17 +269,17 @@ function get_all_substrings(automaton::SuffixAutomaton{T}) where {T}
 end
 
 function Base.iterate(automaton::SuffixAutomaton{T}) where {T}
-	if isempty(automaton.text)
+	if isempty(automaton.data)
 		return nothing
 	end
-	return automaton.text[1], 2
+	return automaton.data[1], 2
 end
 
 function Base.iterate(automaton::SuffixAutomaton{T}, state::Int) where {T}
-	if state > length(automaton.text)
+	if state > length(automaton.data)
 		return nothing
 	end
-	return automaton.text[state], state + 1
+	return automaton.data[state], state + 1
 end
 
 function Base.show(io::IO, automaton::SuffixAutomaton{T}) where {T}
@@ -295,9 +295,9 @@ function Base.show(io::IO, ::MIME"text/plain", automaton::SuffixAutomaton{T}) wh
 	if length(automaton) <= 50
 		print(io, "  content: ")
 		if T == Char
-			print(io, "\"", String(automaton.text), "\"")
+			print(io, "\"", String(automaton.data), "\"")
 		else
-			print(io, automaton.text)
+			print(io, automaton.data)
 		end
 	else
 		print(io, "  content: [", length(automaton), " elements]")
