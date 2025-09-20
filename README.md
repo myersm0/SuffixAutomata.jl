@@ -21,7 +21,7 @@ append!(a, collect("ababc"))
 
 occursin("ab", a)      # true
 findall("ab", a)       # [1, 3]
-lcs("abcdefg", a)      # ("abc", 1)
+lcs("abcdefg", a)      # ("abc", 3)
 
 # build from integers
 a = SuffixAutomaton{Int}()
