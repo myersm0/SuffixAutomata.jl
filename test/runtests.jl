@@ -21,7 +21,7 @@ using SuffixAutomata
 	@test findall(collect("c"), a) == [5]
 	@test findall(collect("d"), a) == Int[]
 
-	sub, pos = longest_common_substring(a, collect("zzabcy"))
+	sub, pos = lcs(a, collect("zzabcy"))
 	@test String(sub) == "abc"
 	@test pos == 3  # Julia indices are 1-based
 

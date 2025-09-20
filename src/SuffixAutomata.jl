@@ -1,7 +1,7 @@
 
 module SuffixAutomata
 
-export SuffixAutomaton, longest_common_substring, substring_count, get_all_substrings
+export SuffixAutomaton, lcs, substring_count, get_all_substrings
 
 mutable struct State{T}
 	transitions::Dict{T,State{T}}
@@ -28,7 +28,28 @@ end
 
 SuffixAutomaton() = SuffixAutomaton{Char}()
 
-function clone(state::State{T}, new_length::Int) where {T}
+# Construct from initial data
+function SuffixAutomaton(data::AbstractVector{T}) where {T}
+	sa = SuffixAutomaton{T}()
+	append!(sa, data)
+	return sa
+end
+
+# Special constructor for strings -> Char automaton
+function SuffixAutomaton(str::AbstractString)
+	sa = SuffixAutomaton{Char}()
+	append!(sa, str)
+	return sa
+end
+
+# Typed constructor with data
+function SuffixAutomaton{T}(data) where {T}
+	sa = SuffixAutomaton{T}()
+	append!(sa, data)
+	return sa
+end
+
+function clone_state(state::State{T}, new_length::Int) where {T}
 	new_state = State{T}(new_length, state.first_occurrence)
 	new_state.transitions = copy(state.transitions)
 	new_state.suffix_link = state.suffix_link
@@ -57,7 +78,7 @@ function Base.push!(automaton::SuffixAutomaton{T}, symbol::T) where {T}
 			new_state.suffix_link = next_state
 		else
 			# we need to split the state
-			clone = clone(next_state, current.length + 1)
+			clone = clone_state(next_state, current.length + 1)
 			push!(automaton.states, clone)
 			next_state.suffix_link = clone
 			new_state.suffix_link = clone
@@ -74,6 +95,14 @@ end
 function Base.append!(automaton::SuffixAutomaton{T}, sequence) where {T}
 	for symbol in sequence
 		push!(automaton, symbol)
+	end
+	return automaton
+end
+
+# Special handling for Char automata with strings
+function Base.append!(automaton::SuffixAutomaton{Char}, str::AbstractString)
+	for char in str
+		push!(automaton, char)
 	end
 	return automaton
 end
@@ -102,6 +131,11 @@ function Base.occursin(pattern, automaton::SuffixAutomaton{T}) where {T}
 	return find_state(automaton, pattern) !== nothing
 end
 
+# String convenience for Char automata
+function Base.occursin(pattern::AbstractString, automaton::SuffixAutomaton{Char})
+	return find_state(automaton, collect(pattern)) !== nothing
+end
+
 function Base.in(pattern, automaton::SuffixAutomaton{T}) where {T}
 	return occursin(pattern, automaton)
 end
@@ -122,9 +156,12 @@ function Base.findall(pattern, automaton::SuffixAutomaton{T}) where {T}
 	return positions
 end
 
-function longest_common_substring(
-		automaton1::SuffixAutomaton{T}, sequence2
-	) where {T}
+# String convenience for Char automata
+function Base.findall(pattern::AbstractString, automaton::SuffixAutomaton{Char})
+	return findall(collect(pattern), automaton)
+end
+
+function lcs(automaton1::SuffixAutomaton{T}, sequence2) where {T}
 	current = automaton1.root
 	length = 0
 	best_length = 0
@@ -157,6 +194,16 @@ function longest_common_substring(
 	end
 end
 
+# String convenience for Char automata
+function lcs(automaton::SuffixAutomaton{Char}, str::AbstractString)
+	result, pos = lcs(automaton, collect(str))
+	if result !== nothing
+		return String(result), pos
+	else
+		return nothing, 0
+	end
+end
+
 function Base.length(automaton::SuffixAutomaton)
 	return length(automaton.text)
 end
@@ -175,6 +222,23 @@ end
 
 function Base.eltype(::SuffixAutomaton{T}) where {T}
 	return T
+end
+
+# Indexing support
+function Base.getindex(automaton::SuffixAutomaton, i::Int)
+	return automaton.text[i]
+end
+
+function Base.getindex(automaton::SuffixAutomaton, r::AbstractRange)
+	return automaton.text[r]
+end
+
+function Base.firstindex(automaton::SuffixAutomaton)
+	return 1
+end
+
+function Base.lastindex(automaton::SuffixAutomaton)
+	return length(automaton.text)
 end
 
 function substring_count(automaton::SuffixAutomaton{T}) where {T}
@@ -241,3 +305,4 @@ function Base.show(io::IO, ::MIME"text/plain", automaton::SuffixAutomaton{T}) wh
 end
 
 end
+
