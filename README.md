@@ -44,6 +44,7 @@ lcs(a, "abcdefg")            # ("abc", 1)
 
 append!(a, "defg")
 lcs(a, "abcdefg")            # ("abcdefg", 1)
+lcs(a, "xyzabcdefg")         # ("abcdefg", 4)
 ```
 
 [![Build Status](https://github.com/myersm0/SuffixAutomata.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/myersm0/SuffixAutomata.jl/actions/workflows/CI.yml?query=branch%3Amain)
