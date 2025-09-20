@@ -28,10 +28,10 @@ append!(a, [1, 2, 3, 1, 2, 3])
 
 occursin([1, 2, 3], a)   # true
 findall([1, 2, 3], a)    # [1, 4]
+occursin(4, a)           # false
 
 push!(a, 4)
 occursin(4, a)           # true
-occursin(5, a)           # false
 ```
 
 [![Build Status](https://github.com/myersm0/SuffixAutomata.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/myersm0/SuffixAutomata.jl/actions/workflows/CI.yml?query=branch%3Amain)
