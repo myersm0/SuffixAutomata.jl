@@ -32,7 +32,7 @@ append!(a, a[1:end])     # double the length by appending
 length(a)                # 14
 ```
 
-Alternatively you may pass in a single string and it will be broken up for you into a vector of `Char`:
+Alternatively, for the more canonical case of dealing with _character_ data, you may pass in a single string and it will be converted to a `Vector{Char}` for you internally:
 ```julia
 a = SuffixAutomaton("ababc")
 typeof(a)                    # SuffixAutomaton{Char}
