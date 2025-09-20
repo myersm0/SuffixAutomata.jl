@@ -40,7 +40,7 @@ eltype(a)                    # Char
 
 occursin("ab", a)            # true
 findall("ab", a)             # [1, 3]
-lcs(a, "abcdef")            # ("abc", 1)
+lcs(a, "abcdef")             # ("abc", 1)
 
 append!(a, "def")
 lcs(a,   "abcdef")          # ("abcdef", 1)
