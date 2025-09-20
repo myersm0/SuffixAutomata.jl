@@ -1,0 +1,6 @@
+[pg_texts]
+git-tree-sha1 = "b2ccf509b13d2df74afa6bbc477eb8d6b69d767c"
+
+    [[pg_texts.download]]
+    sha256 = "1e8cc3deac8b922e8a9f83fbbe79af37aca86ae8aaf50cd23d58801af36e2be9"
+    url = "https://gist.github.com/myersm0/e8cf1f325bb63f54b485c08239d84ff6/raw/b2ccf509b13d2df74afa6bbc477eb8d6b69d767c.tar.gz"
