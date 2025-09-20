@@ -76,6 +76,10 @@ text = join(readlines(filename)[54:3403], '\n')
 	for letter in collect("abcdefghijklmnopqrstuvwxyz")
 		@test !occursin("Alice$letter", a)
 	end
+	words = unique(split(text, r"[^a-z0-9']+"i))
+	for word in words
+		@test occursin(word, a)
+	end
 	@test lcs(a, "Alice") == lcs(a, "Alicexyz") == ("Alice", 1)
 	@test lcs(a, "xyzAlice") == lcs(a, "xyzAlicexyz") == ("Alice", 4)
 	@test length(findall("Alice", a)) == 397
