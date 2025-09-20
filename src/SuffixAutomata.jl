@@ -4,15 +4,15 @@ module SuffixAutomata
 export SuffixAutomaton, lcs, substring_count, get_all_substrings
 
 mutable struct State{T}
-	transitions::Dict{T,State{T}}
-	suffix_link::Union{State{T},Nothing}
+	transitions::Dict{T, State{T}}
+	suffix_link::Union{State{T}, Nothing}
 	length::Int
 	is_terminal::Bool
 	first_occurrence::Int
 end
 
 State{T}(length::Int = 0, first_pos::Int = 0) where {T} =
-	State{T}(Dict{T,State{T}}(), nothing, length, false, first_pos)
+	State{T}(Dict{T, State{T}}(), nothing, length, false, first_pos)
 
 mutable struct SuffixAutomaton{T}
 	root::State{T}
@@ -28,21 +28,19 @@ end
 
 SuffixAutomaton() = SuffixAutomaton{Char}()
 
-# Construct from initial data
 function SuffixAutomaton(data::AbstractVector{T}) where {T}
 	sa = SuffixAutomaton{T}()
 	append!(sa, data)
 	return sa
 end
 
-# Special constructor for strings -> Char automaton
+# special constructor for string -> Char automaton
 function SuffixAutomaton(str::AbstractString)
 	sa = SuffixAutomaton{Char}()
 	append!(sa, str)
 	return sa
 end
 
-# Typed constructor with data
 function SuffixAutomaton{T}(data) where {T}
 	sa = SuffixAutomaton{T}()
 	append!(sa, data)
@@ -64,11 +62,11 @@ function Base.push!(automaton::SuffixAutomaton{T}, symbol::T) where {T}
 	push!(automaton.states, new_state)
 	current = automaton.last
 	# add transitions to the new state from all states on the suffix path
-	while current !== nothing && !haskey(current.transitions, symbol)
+	while !isnothing(current) && !haskey(current.transitions, symbol)
 		current.transitions[symbol] = new_state
 		current = current.suffix_link
 	end
-	if current === nothing
+	if isnothing(current)
 		# we've reached the root via suffix links
 		new_state.suffix_link = automaton.root
 	else
@@ -82,7 +80,7 @@ function Base.push!(automaton::SuffixAutomaton{T}, symbol::T) where {T}
 			push!(automaton.states, clone)
 			next_state.suffix_link = clone
 			new_state.suffix_link = clone
-			while current !== nothing && current.transitions[symbol] === next_state
+			while !isnothing(current) && current.transitions[symbol] === next_state
 				current.transitions[symbol] = clone
 				current = current.suffix_link
 			end
@@ -99,7 +97,7 @@ function Base.append!(automaton::SuffixAutomaton{T}, sequence) where {T}
 	return automaton
 end
 
-# Special handling for Char automata with strings
+# special handling for Char automata with strings
 function Base.append!(automaton::SuffixAutomaton{Char}, str::AbstractString)
 	for char in str
 		push!(automaton, char)
@@ -109,7 +107,7 @@ end
 
 function mark_terminals!(automaton::SuffixAutomaton{T}) where {T}
 	current = automaton.last
-	while current !== nothing
+	while !isnothing(current)
 		current.is_terminal = true
 		current = current.suffix_link
 	end
@@ -128,12 +126,12 @@ function find_state(automaton::SuffixAutomaton{T}, pattern) where {T}
 end
 
 function Base.occursin(pattern, automaton::SuffixAutomaton{T}) where {T}
-	return find_state(automaton, pattern) !== nothing
+	return !isnothing(find_state(automaton, pattern))
 end
 
-# String convenience for Char automata
+# string convenience for Char automata
 function Base.occursin(pattern::AbstractString, automaton::SuffixAutomaton{Char})
-	return find_state(automaton, collect(pattern)) !== nothing
+	return !isnothing(find_state(automaton, collect(pattern)))
 end
 
 function Base.in(pattern, automaton::SuffixAutomaton{T}) where {T}
@@ -142,10 +140,8 @@ end
 
 function Base.findall(pattern, automaton::SuffixAutomaton{T}) where {T}
 	isempty(pattern) && return collect(1:length(automaton.data)+1)
-
 	state = find_state(automaton, pattern)
-	state === nothing && return Int[]
-
+	isnothing(state) && return Int[]
 	patlen = length(pattern)
 	positions = Int[]
 	for i in 1:(length(automaton.data) - patlen + 1)
@@ -156,7 +152,7 @@ function Base.findall(pattern, automaton::SuffixAutomaton{T}) where {T}
 	return positions
 end
 
-# String convenience for Char automata
+# string convenience for Char automata
 function Base.findall(pattern::AbstractString, automaton::SuffixAutomaton{Char})
 	return findall(collect(pattern), automaton)
 end
@@ -170,7 +166,7 @@ function lcs(automaton1::SuffixAutomaton{T}, sequence2) where {T}
 	for (i, symbol) in enumerate(sequence2)
 		while current !== automaton1.root && !haskey(current.transitions, symbol)
 			current = current.suffix_link
-			length = current === nothing ? 0 : current.length
+			length = isnothing(current) ? 0 : current.length
 		end
 		
 		if haskey(current.transitions, symbol)
@@ -194,10 +190,10 @@ function lcs(automaton1::SuffixAutomaton{T}, sequence2) where {T}
 	end
 end
 
-# String convenience for Char automata
+# string convenience for Char automata
 function lcs(automaton::SuffixAutomaton{Char}, str::AbstractString)
 	result, pos = lcs(automaton, collect(str))
-	if result !== nothing
+	if !isnothing(result)
 		return String(result), pos
 	else
 		return nothing, 0
@@ -224,7 +220,6 @@ function Base.eltype(::SuffixAutomaton{T}) where {T}
 	return T
 end
 
-# Indexing support
 function Base.getindex(automaton::SuffixAutomaton, i::Int)
 	return automaton.data[i]
 end
@@ -253,7 +248,7 @@ function substring_count(automaton::SuffixAutomaton{T}) where {T}
 	count = 0
 	for state in automaton.states
 		if state !== automaton.root
-			parent_length = state.suffix_link === nothing ? 0 : state.suffix_link.length
+			parent_length = isnothing(state.suffix_link) ? 0 : state.suffix_link.length
 			count += state.length - parent_length
 		end
 	end
@@ -277,16 +272,12 @@ function get_all_substrings(automaton::SuffixAutomaton{T}) where {T}
 end
 
 function Base.iterate(automaton::SuffixAutomaton{T}) where {T}
-	if isempty(automaton.data)
-		return nothing
-	end
+	isempty(automaton.data) && return nothing
 	return automaton.data[1], 2
 end
 
 function Base.iterate(automaton::SuffixAutomaton{T}, state::Int) where {T}
-	if state > length(automaton.data)
-		return nothing
-	end
+	state > length(automaton.data) && return nothing
 	return automaton.data[state], state + 1
 end
 
