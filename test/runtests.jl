@@ -23,7 +23,7 @@ using Pkg.Artifacts
 	@test findall("c", a) == [5]
 	@test findall("d", a) == Int[]
 
-	sub, pos = lcs(a, "zzabcy")
+	sub, pos = lcs("zzabcy", a)
 	@test String(sub) == "abc"
 	@test pos == 3
 
@@ -80,8 +80,8 @@ text = join(readlines(filename)[54:3403], '\n')
 	for word in words
 		@test occursin(word, a)
 	end
-	@test lcs(a, "Alice") == lcs(a, "Alicexyz") == ("Alice", 1)
-	@test lcs(a, "xyzAlice") == lcs(a, "xyzAlicexyz") == ("Alice", 4)
+	@test lcs("Alice", a) == lcs("Alicexyz", a) == ("Alice", 1)
+	@test lcs("xyzAlice", a) == lcs("xyzAlicexyz", a) == ("Alice", 4)
 	@test length(findall("Alice", a)) == 397
 end
 	

@@ -157,14 +157,14 @@ function Base.findall(pattern::AbstractString, automaton::SuffixAutomaton{Char})
 	return findall(collect(pattern), automaton)
 end
 
-function lcs(automaton1::SuffixAutomaton{T}, sequence2) where {T}
-	current = automaton1.root
+function lcs(sequence, automaton::SuffixAutomaton{T}) where {T}
+	current = automaton.root
 	length = 0
 	best_length = 0
 	best_position = 0
 	
-	for (i, symbol) in enumerate(sequence2)
-		while current !== automaton1.root && !haskey(current.transitions, symbol)
+	for (i, symbol) in enumerate(sequence)
+		while current !== automaton.root && !haskey(current.transitions, symbol)
 			current = current.suffix_link
 			length = isnothing(current) ? 0 : current.length
 		end
@@ -173,7 +173,7 @@ function lcs(automaton1::SuffixAutomaton{T}, sequence2) where {T}
 			current = current.transitions[symbol]
 			length += 1
 		else
-			current = automaton1.root
+			current = automaton.root
 			length = 0
 		end
 		
@@ -183,21 +183,15 @@ function lcs(automaton1::SuffixAutomaton{T}, sequence2) where {T}
 		end
 	end
 	
-	if best_length > 0
-		return sequence2[best_position:best_position + best_length - 1], best_position
-	else
-		return nothing, 0
-	end
+	best_length > 0 || return nothing, 0
+	return sequence[best_position:best_position + best_length - 1], best_position
 end
 
 # string convenience for Char automata
-function lcs(automaton::SuffixAutomaton{Char}, str::AbstractString)
-	result, pos = lcs(automaton, collect(str))
-	if !isnothing(result)
-		return String(result), pos
-	else
-		return nothing, 0
-	end
+function lcs(sequence::AbstractString, automaton::SuffixAutomaton{Char})
+	result, pos = lcs(collect(sequence), automaton)
+	isnothing(result) && return nothing, 0
+	return String(result), pos
 end
 
 function Base.length(automaton::SuffixAutomaton)
