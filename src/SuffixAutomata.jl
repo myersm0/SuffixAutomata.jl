@@ -172,16 +172,18 @@ end
     findall(pattern, automaton::SuffixAutomaton{T}) where T
 
 Find all occurrences of a pattern in the automaton's text.
+
+Returns a `Vector{UnitRange{Int}}`.
 """
-function Base.findall(pattern, automaton::SuffixAutomaton)
-	isempty(pattern) && return collect(1:length(automaton.data)+1)
+function Base.findall(pattern, automaton::SuffixAutomaton{T}) where {T}
+	isempty(pattern) && return UnitRange{Int}[]
 	state = find_state(automaton, pattern)
-	isnothing(state) && return Int[]
+	isnothing(state) && return UnitRange{Int}[]
 	patlen = length(pattern)
-	positions = Int[]
+	positions = UnitRange{Int}[]
 	for i in 1:(length(automaton.data) - patlen + 1)
 		if automaton.data[i:i+patlen-1] == pattern
-			push!(positions, i)
+			push!(positions, i:i+patlen-1)
 		end
 	end
 	return positions

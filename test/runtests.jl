@@ -16,12 +16,12 @@ using Pkg.Artifacts
 
 	@test substring_count(a) == 12
 
-	@test findall("ab", a) == [1, 3]
-	@test findall("b", a) == [2, 4]
-	@test findall("abc", a) == [3]
-	@test findall("a", a) == [1, 3]
-	@test findall("c", a) == [5]
-	@test findall("d", a) == Int[]
+	@test findall("ab", a) == [1:2, 3:4]
+	@test findall("b", a) == [2:2, 4:4]
+	@test findall("abc", a) == [3:5]
+	@test findall("a", a) == [1:1, 3:3]
+	@test findall("c", a) == [5:5]
+	@test findall("d", a) == UnitRange{Int}[]
 
 	sub, pos = lcs("zzabcy", a)
 	@test String(sub) == "abc"
@@ -32,7 +32,7 @@ using Pkg.Artifacts
 	@test isempty(a)
 	@test !occursin("x", a)
 	@test substring_count(a) == 0
-	@test findall("x", a) == Int[]
+	@test findall("x", a) == UnitRange{Int}[]
 
 	# single character
 	a = SuffixAutomaton()
@@ -40,14 +40,14 @@ using Pkg.Artifacts
 	@test occursin("a", a)
 	@test !occursin("b", a)
 	@test substring_count(a) == 1
-	@test findall(collect("a"), a) == [1]
+	@test findall(collect("a"), a) == [1:1]
 
 	# repeated character
 	a = SuffixAutomaton()
 	append!(a, "aaaa")
 	@test occursin("aaa", a)
 	@test occursin(collect("aaa"), a)
-	@test findall("aa", a) == findall(collect("aa"), a) == [1, 2, 3]
+	@test findall("aa", a) == findall(collect("aa"), a) == [1:2, 2:3, 3:4]
 	@test substring_count(a) == 4  # "a", "aa", "aaa", "aaaa"
 
 	a = SuffixAutomaton{Int}()
@@ -60,8 +60,8 @@ using Pkg.Artifacts
 	@test !occursin([2,3], a)
 
 	# occurrences
-	@test findall([1], a) == [1, 3]
-	@test findall([1,3], a) == [3]
+	@test findall([1], a) == [1:1, 3:3]
+	@test findall([1,3], a) == [3:4]
 
 	# distinct substrings
 	@test substring_count(a) == 9
