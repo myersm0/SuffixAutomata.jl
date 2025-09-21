@@ -214,7 +214,7 @@ function Base.eltype(::SuffixAutomaton{T}) where {T}
 	return T
 end
 
-function Base.getindex(automaton::SuffixAutomaton, i::Int)
+function Base.getindex(automaton::SuffixAutomaton, i::Integer)
 	return automaton.data[i]
 end
 
@@ -270,7 +270,7 @@ function Base.iterate(automaton::SuffixAutomaton{T}) where {T}
 	return automaton.data[1], 2
 end
 
-function Base.iterate(automaton::SuffixAutomaton{T}, state::Int) where {T}
+function Base.iterate(automaton::SuffixAutomaton{T}, state::Integer) where {T}
 	state > length(automaton.data) && return nothing
 	return automaton.data[state], state + 1
 end
