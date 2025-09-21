@@ -18,7 +18,7 @@ using SuffixAutomata
 a = SuffixAutomaton([1, 2, 3, 1, 2, 3])
 
 occursin([1, 2, 3], a)   # true
-findall([1, 2, 3], a)    # [1, 4]
+findall([1, 2, 3], a)    # [1:3, 4:6]
 occursin(4, a)           # false
 lcs([1, 2, 3, 4], a)     # ([1, 2, 3], 1)
 
@@ -39,7 +39,7 @@ typeof(a)                    # SuffixAutomaton{Char}
 eltype(a)                    # Char
 
 occursin("ab", a)            # true
-findall("ab", a)             # [1, 3]
+findall("ab", a)             # [1:2, 3:4]
 lcs("abcdef", a)             # ("abc", 1)
 
 append!(a, "def")
