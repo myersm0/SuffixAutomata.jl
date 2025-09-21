@@ -1,4 +1,3 @@
-
 module SuffixAutomata
 
 export SuffixAutomaton, lcs, substring_count, get_all_substrings
@@ -21,29 +20,42 @@ mutable struct SuffixAutomaton{T}
 	data::Vector{T}
 end
 
+"""
+    SuffixAutomaton{T}()
+
+Create an empty suffix automaton for elements of type `T`.
+"""
 function SuffixAutomaton{T}() where {T}
 	root = State{T}(0, 0)
 	return SuffixAutomaton{T}(root, root, [root], T[])
 end
 
+"""
+    SuffixAutomaton()
+
+Create an empty suffix automaton for character data.
+"""
 SuffixAutomaton() = SuffixAutomaton{Char}()
 
+"""
+    SuffixAutomaton(data::AbstractVector{T}) where T
+
+Create a suffix automaton from a vector of elements.
+"""
 function SuffixAutomaton(data::AbstractVector{T}) where {T}
 	sa = SuffixAutomaton{T}()
 	append!(sa, data)
 	return sa
 end
 
-# special constructor for string -> Char automaton
+"""
+    SuffixAutomaton(str::AbstractString)
+
+Create a character-based suffix automaton from a string.
+"""
 function SuffixAutomaton(str::AbstractString)
 	sa = SuffixAutomaton{Char}()
 	append!(sa, str)
-	return sa
-end
-
-function SuffixAutomaton{T}(data) where {T}
-	sa = SuffixAutomaton{T}()
-	append!(sa, data)
 	return sa
 end
 
@@ -55,6 +67,11 @@ function clone_state(state::State{T}, new_length::Int) where {T}
 	return new_state
 end
 
+"""
+    push!(automaton::SuffixAutomaton{T}, symbol::T)
+
+Add a single symbol to a suffix automaton, updating its structure.
+"""
 function Base.push!(automaton::SuffixAutomaton{T}, symbol::T) where {T}
 	position = length(automaton.data)
 	push!(automaton.data, symbol)
@@ -90,14 +107,23 @@ function Base.push!(automaton::SuffixAutomaton{T}, symbol::T) where {T}
 	return automaton
 end
 
-function Base.append!(automaton::SuffixAutomaton{T}, sequence) where {T}
+"""
+    append!(automaton::SuffixAutomaton, sequence)
+
+Add a sequence of symbols to a suffix automaton.
+"""
+function Base.append!(automaton::SuffixAutomaton, sequence)
 	for symbol in sequence
 		push!(automaton, symbol)
 	end
 	return automaton
 end
 
-# special handling for Char automata with strings
+"""
+    append!(automaton::SuffixAutomaton{Char}, str::AbstractString)
+
+Add the characters of a string to a character-based suffix automaton.
+"""
 function Base.append!(automaton::SuffixAutomaton{Char}, str::AbstractString)
 	for char in str
 		push!(automaton, char)
@@ -105,7 +131,7 @@ function Base.append!(automaton::SuffixAutomaton{Char}, str::AbstractString)
 	return automaton
 end
 
-function mark_terminals!(automaton::SuffixAutomaton{T}) where {T}
+function mark_terminals!(automaton::SuffixAutomaton)
 	current = automaton.last
 	while !isnothing(current)
 		current.is_terminal = true
@@ -113,7 +139,7 @@ function mark_terminals!(automaton::SuffixAutomaton{T}) where {T}
 	end
 end
 
-function find_state(automaton::SuffixAutomaton{T}, pattern) where {T}
+function find_state(automaton::SuffixAutomaton, pattern)
 	current = automaton.root
 	for symbol in pattern
 		if haskey(current.transitions, symbol)
@@ -125,11 +151,15 @@ function find_state(automaton::SuffixAutomaton{T}, pattern) where {T}
 	return current
 end
 
+"""
+    occursin(pattern, automaton::SuffixAutomaton{T}) where T
+
+Check if a pattern occurs as in the automaton's data.
+"""
 function Base.occursin(pattern, automaton::SuffixAutomaton{T}) where {T}
 	return !isnothing(find_state(automaton, pattern))
 end
 
-# string convenience for Char automata
 function Base.occursin(pattern::AbstractString, automaton::SuffixAutomaton{Char})
 	return !isnothing(find_state(automaton, collect(pattern)))
 end
@@ -138,6 +168,11 @@ function Base.in(pattern, automaton::SuffixAutomaton{T}) where {T}
 	return occursin(pattern, automaton)
 end
 
+"""
+    findall(pattern, automaton::SuffixAutomaton{T}) where T
+
+Find all occurrences of a pattern in the automaton's text.
+"""
 function Base.findall(pattern, automaton::SuffixAutomaton{T}) where {T}
 	isempty(pattern) && return collect(1:length(automaton.data)+1)
 	state = find_state(automaton, pattern)
@@ -152,11 +187,18 @@ function Base.findall(pattern, automaton::SuffixAutomaton{T}) where {T}
 	return positions
 end
 
-# string convenience for Char automata
 function Base.findall(pattern::AbstractString, automaton::SuffixAutomaton{Char})
 	return findall(collect(pattern), automaton)
 end
 
+"""
+    lcs(sequence, automaton::SuffixAutomaton{T}) where T
+
+Find the longest common substring between a sequence and the automaton's text.
+
+Returns a tuple of `(substring, position)` where `substring` is the longest 
+common substring and `position` is its 1-based starting position in the input sequence
+"""
 function lcs(sequence, automaton::SuffixAutomaton{T}) where {T}
 	current = automaton.root
 	length = 0
@@ -187,21 +229,35 @@ function lcs(sequence, automaton::SuffixAutomaton{T}) where {T}
 	return sequence[best_position:best_position + best_length - 1], best_position
 end
 
-# string convenience for Char automata
 function lcs(sequence::AbstractString, automaton::SuffixAutomaton{Char})
 	result, pos = lcs(collect(sequence), automaton)
 	isnothing(result) && return nothing, 0
 	return String(result), pos
 end
 
+"""
+    length(automaton::SuffixAutomaton)
+
+Get the length of the sequence used to build the automaton.
+"""
 function Base.length(automaton::SuffixAutomaton)
 	return length(automaton.data)
 end
 
+"""
+    size(automaton::SuffixAutomaton)
+
+Get the number of states in the automaton.
+"""
 function Base.size(automaton::SuffixAutomaton)
 	return length(automaton.states)
 end
 
+"""
+    isempty(automaton::SuffixAutomaton)
+
+Check if the automaton is empty (contains no data).
+"""
 function Base.isempty(automaton::SuffixAutomaton)
 	return isempty(automaton.data)
 end
@@ -213,6 +269,13 @@ end
 function Base.eltype(::SuffixAutomaton{T}) where {T}
 	return T
 end
+
+"""
+    getindex(automaton::SuffixAutomaton, i)
+
+Access elements of the underlying sequence by index.
+"""
+function Base.getindex(automaton::SuffixAutomaton, args...) end
 
 function Base.getindex(automaton::SuffixAutomaton, i::Integer)
 	return automaton.data[i]
@@ -238,6 +301,11 @@ function Base.:(==)(a::SuffixAutomaton, b::SuffixAutomaton)
 	isequal(a, b)
 end
 
+"""
+    substring_count(automaton::SuffixAutomaton)
+
+Count the number of distinct substrings in the automaton.
+"""
 function substring_count(automaton::SuffixAutomaton{T}) where {T}
 	count = 0
 	for state in automaton.states
@@ -249,6 +317,13 @@ function substring_count(automaton::SuffixAutomaton{T}) where {T}
 	return count
 end
 
+"""
+    get_all_substrings(automaton::SuffixAutomaton)
+
+Get all distinct substrings recognized by the automaton.
+
+Warning: for large texts, this can return a very large number of substrings (up to O(n²)).
+"""
 function get_all_substrings(automaton::SuffixAutomaton{T}) where {T}
 	substrings = Vector{Vector{T}}()
 	function dfs(state::State{T}, path::Vector{T})
@@ -300,4 +375,3 @@ function Base.show(io::IO, ::MIME"text/plain", automaton::SuffixAutomaton{T}) wh
 end
 
 end
-
