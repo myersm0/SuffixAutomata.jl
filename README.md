@@ -1,7 +1,7 @@
 # SuffixAutomata
 A Julia implementation of [suffix automata](https://en.wikipedia.org/wiki/Suffix_automaton) for generic sequences. Works with characters, integers, strings, or any other iterable type.
 
-Some use cases are demonstrated in the files `[examples/numbers.jl](https://github.com/myersm0/SuffixAutomata.jl/blob/main/examples/numbers.jl)` and `[examples/shakespeare.jl](https://github.com/myersm0/SuffixAutomata.jl/blob/main/examples/shakespeare.jl)` in this repo.
+Some use cases are demonstrated in the files [examples/numbers.jl](https://github.com/myersm0/SuffixAutomata.jl/blob/main/examples/numbers.jl) and [examples/shakespeare.jl](https://github.com/myersm0/SuffixAutomata.jl/blob/main/examples/shakespeare.jl) in this repo.
 
 ## Features
 - Build a suffix automaton from any sequence (`String`, `Vector{Char}`, `Vector{Int}`, etc.).
