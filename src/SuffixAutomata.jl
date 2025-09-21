@@ -156,7 +156,7 @@ end
 
 Check if a pattern occurs as in the automaton's data.
 """
-function Base.occursin(pattern, automaton::SuffixAutomaton{T}) where {T}
+function Base.occursin(pattern, automaton::SuffixAutomaton)
 	return !isnothing(find_state(automaton, pattern))
 end
 
@@ -164,7 +164,7 @@ function Base.occursin(pattern::AbstractString, automaton::SuffixAutomaton{Char}
 	return !isnothing(find_state(automaton, collect(pattern)))
 end
 
-function Base.in(pattern, automaton::SuffixAutomaton{T}) where {T}
+function Base.in(pattern, automaton::SuffixAutomaton)
 	return occursin(pattern, automaton)
 end
 
@@ -173,7 +173,7 @@ end
 
 Find all occurrences of a pattern in the automaton's text.
 """
-function Base.findall(pattern, automaton::SuffixAutomaton{T}) where {T}
+function Base.findall(pattern, automaton::SuffixAutomaton)
 	isempty(pattern) && return collect(1:length(automaton.data)+1)
 	state = find_state(automaton, pattern)
 	isnothing(state) && return Int[]
@@ -199,7 +199,7 @@ Find the longest common substring between a sequence and the automaton's text.
 Returns a tuple of `(substring, position)` where `substring` is the longest 
 common substring and `position` is its 1-based starting position in the input sequence
 """
-function lcs(sequence, automaton::SuffixAutomaton{T}) where {T}
+function lcs(sequence, automaton::SuffixAutomaton)
 	current = automaton.root
 	length = 0
 	best_length = 0
@@ -306,7 +306,7 @@ end
 
 Count the number of distinct substrings in the automaton.
 """
-function substring_count(automaton::SuffixAutomaton{T}) where {T}
+function substring_count(automaton::SuffixAutomaton)
 	count = 0
 	for state in automaton.states
 		if state !== automaton.root
@@ -340,23 +340,25 @@ function get_all_substrings(automaton::SuffixAutomaton{T}) where {T}
 	return substrings
 end
 
-function Base.iterate(automaton::SuffixAutomaton{T}) where {T}
+function Base.iterate(automaton::SuffixAutomaton)
 	isempty(automaton.data) && return nothing
 	return automaton.data[1], 2
 end
 
-function Base.iterate(automaton::SuffixAutomaton{T}, state::Integer) where {T}
+function Base.iterate(automaton::SuffixAutomaton, state::Integer)
 	state > length(automaton.data) && return nothing
 	return automaton.data[state], state + 1
 end
 
-function Base.show(io::IO, automaton::SuffixAutomaton{T}) where {T}
+function Base.show(io::IO, automaton::SuffixAutomaton)
 	len = length(automaton)
 	siz = size(automaton)
 	print(io, "SuffixAutomaton{$T}(length=$len, states=$siz")
 end
 
-function Base.show(io::IO, ::MIME"text/plain", automaton::SuffixAutomaton{T}) where {T}
+function Base.show(
+		io::IO, ::MIME"text/plain", automaton::SuffixAutomaton{T}
+	) where {T}
 	println(io, "SuffixAutomaton{$T}")
 	println(io, "  sequence length: $(length(automaton))")
 	println(io, "  states: $(size(automaton))")
