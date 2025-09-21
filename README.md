@@ -1,5 +1,5 @@
 # SuffixAutomata
-A Julia implementation of *suffix automata* for generic sequences. Works with characters, integers, strings, or any other iterable type.
+A Julia implementation of [suffix automata](https://en.wikipedia.org/wiki/Suffix_automaton) for generic sequences. Works with characters, integers, strings, or any other iterable type.
 
 Some use cases for [numbers](https://github.com/myersm0/SuffixAutomata.jl/blob/main/examples/numbers.jl) and for [text data](https://github.com/myersm0/SuffixAutomata.jl/blob/main/examples/shakespeare.jl) are demonstrated in the `examples` folder.
 
