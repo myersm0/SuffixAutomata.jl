@@ -20,11 +20,11 @@ a = SuffixAutomaton([1, 2, 3, 1, 2, 3])
 occursin([1, 2, 3], a)   # true
 findall([1, 2, 3], a)    # [1, 4]
 occursin(4, a)           # false
-lcs(a, [1, 2, 3, 4])     # ([1, 2, 3], 1)
+lcs([1, 2, 3, 4], a)     # ([1, 2, 3], 1)
 
 push!(a, 4)
 occursin(4, a)           # true
-lcs(a, [1, 2, 3, 4])     # ([1, 2, 3, 4], 1)
+lcs([1, 2, 3, 4], a)     # ([1, 2, 3, 4], 1)
 
 length(a)                # 7
 a[1:5]                   # [1, 2, 3, 1, 2]
@@ -40,12 +40,14 @@ eltype(a)                    # Char
 
 occursin("ab", a)            # true
 findall("ab", a)             # [1, 3]
-lcs(a, "abcdef")             # ("abc", 1)
+lcs("abcdef", a)             # ("abc", 1)
 
 append!(a, "def")
-lcs(a,   "abcdef")          # ("abcdef", 1)
-lcs(a,  "zabcdef")          # ("abcdef", 2)
-lcs(a, "zzabcdef")          # ("abcdef", 3)
+lcs(  "abcdef", a)          # ("abcdef", 1)
+lcs( "zabcdef", a)          # ("abcdef", 2)
+lcs("zzabcdef", a)          # ("abcdef", 3)
 ```
+
+Note that we adhere to the `f(needle, haystack)` argument order. For `lcs` (longest common substring), however, there is a gotcha in the fact that the position returned is _the position of the match in the query term_ (the "needle"), perhaps contrary to expectations; but this is the way the algorithm intrinsically works.
 
 [![Build Status](https://github.com/myersm0/SuffixAutomata.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/myersm0/SuffixAutomata.jl/actions/workflows/CI.yml?query=branch%3Amain)
