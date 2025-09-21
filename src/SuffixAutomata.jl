@@ -201,7 +201,7 @@ Find the longest common substring between a sequence and the automaton's text.
 Returns a tuple of `(substring, position)` where `substring` is the longest 
 common substring and `position` is its 1-based starting position in the input sequence
 """
-function lcs(sequence, automaton::SuffixAutomaton)
+function lcs(sequence, automaton::SuffixAutomaton{T}) where T
 	current = automaton.root
 	length = 0
 	best_length = 0
@@ -227,7 +227,7 @@ function lcs(sequence, automaton::SuffixAutomaton)
 		end
 	end
 	
-	best_length > 0 || return nothing, 0
+	best_length > 0 || return T[], 0
 	return sequence[best_position:best_position + best_length - 1], best_position
 end
 

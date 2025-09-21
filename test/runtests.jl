@@ -82,6 +82,8 @@ text = join(readlines(filename)[54:3403], '\n')
 	end
 	@test lcs("Alice", a) == lcs("Alicexyz", a) == ("Alice", 1)
 	@test lcs("xyzAlice", a) == lcs("xyzAlicexyz", a) == ("Alice", 4)
+	@test lcs("αβ̧γ", a) == ("", 0)
+	@test lcs(collect("αβ̧γ"), a) == (Char[], 0)
 	@test length(findall("Alice", a)) == 397
 end
 	
