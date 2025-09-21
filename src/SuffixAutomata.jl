@@ -282,14 +282,16 @@ function Base.iterate(automaton::SuffixAutomaton{T}, state::Int) where {T}
 end
 
 function Base.show(io::IO, automaton::SuffixAutomaton{T}) where {T}
-	print(io, "SuffixAutomaton{", T, "}(length=", length(automaton), ", states=", size(automaton), ")")
+	len = length(automaton)
+	siz = size(automaton)
+	print(io, "SuffixAutomaton{$T}(length=$len, states=$siz")
 end
 
 function Base.show(io::IO, ::MIME"text/plain", automaton::SuffixAutomaton{T}) where {T}
-	println(io, "SuffixAutomaton{", T, "}")
-	println(io, "  sequence length: ", length(automaton))
-	println(io, "  states: ", size(automaton))
-	println(io, "  unique substrings: ", substring_count(automaton))
+	println(io, "SuffixAutomaton{$T}")
+	println(io, "  sequence length: $(length(automaton))")
+	println(io, "  states: $(size(automaton))")
+	println(io, "  unique substrings: $(substring_count(automaton))")
 	length(automaton) > 0 || return
 	if length(automaton) <= 50
 		print(io, "  content: ")
@@ -299,7 +301,7 @@ function Base.show(io::IO, ::MIME"text/plain", automaton::SuffixAutomaton{T}) wh
 			print(io, automaton.data)
 		end
 	else
-		print(io, "  content: [", length(automaton), " elements]")
+		print(io, "  content: [$(length(automaton)) elements]")
 	end
 end
 
