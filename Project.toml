@@ -1,7 +1,7 @@
 name = "SuffixAutomata"
 uuid = "d8d90db5-3bd3-4328-8736-8f5f0958bb41"
 authors = ["Michael Myers"]
-version = "0.1.0"
+version = "0.2.0"
 
 [deps]
 
