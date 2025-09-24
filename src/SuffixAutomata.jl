@@ -173,7 +173,7 @@ end
 
 Find all occurrences of a pattern in the automaton's text.
 
-Returns a `Vector{UnitRange{Int}}`.
+Returns a (possibly empty) `Vector{UnitRange{Int}}`.
 """
 function Base.findall(pattern, automaton::SuffixAutomaton{T}) where {T}
 	isempty(pattern) && return UnitRange{Int}[]
@@ -187,6 +187,17 @@ function Base.findall(pattern, automaton::SuffixAutomaton{T}) where {T}
 		end
 	end
 	return positions
+end
+
+"""
+    findall(pattern, automaton::SuffixAutomaton{T}) where T
+
+Find all occurrences of a single element `T` in a `SuffixAutomaton{T}`.
+
+Returns a (possibly empty) `Vector{Int}`.
+"""
+function Base.findall(element::T, automaton::SuffixAutomaton{T}) where {T}
+	return findall([element], automaton) .|> first  # convert ranges to integers
 end
 
 function Base.findall(pattern::AbstractString, automaton::SuffixAutomaton{Char})
